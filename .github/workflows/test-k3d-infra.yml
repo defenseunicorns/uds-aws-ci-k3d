@@ -17,6 +17,9 @@ jobs:
   test-k3d-infra:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -29,9 +32,6 @@ jobs:
       - name: Install Zarf
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
-
-      - name: Checkout code
-        uses: actions/checkout@v3
 
       - name: Create cluster
         env:

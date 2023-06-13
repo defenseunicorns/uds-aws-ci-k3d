@@ -20,6 +20,9 @@ jobs:
   build-ami:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -28,9 +31,6 @@ jobs:
           aws-region: us-west-2
           # 21600 seconds == 6 hours
           role-duration-seconds: 21600
-
-      - name: Checkout code
-        uses: actions/checkout@v3
 
       - name: Packer init
         run: packer init .
