@@ -55,6 +55,8 @@ waitInstanceReady "$instance_id"
 
 rm -rf ~/.kube/config
 
+mkdir ~/.kube
+
 aws secretsmanager get-secret-value \
     --secret-id "$secret_name" \
     --query 'SecretString' \
