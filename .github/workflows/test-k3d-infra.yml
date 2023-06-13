@@ -44,6 +44,8 @@ jobs:
         working-directory: terraform
 
       - name: Teardown cluster
+        env:
+          SHA: ${{ github.sha }}
         if: always()
         run: ./teardown-cluster.sh
         working-directory: terraform
