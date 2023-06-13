@@ -16,6 +16,9 @@ on:
     paths-ignore:
       - "**.md"
 
+permissions:
+  id-token: write
+
 jobs:
   build-ami:
     runs-on: ubuntu-latest
