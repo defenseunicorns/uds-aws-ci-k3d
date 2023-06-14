@@ -36,9 +36,3 @@ sudo apt-get install unzip -y
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
-
-# Remove transient dependencies
-sudo apt-get purge -y \
-    curl \
-    gnupg \
-    unzip
