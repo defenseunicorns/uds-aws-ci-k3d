@@ -11,8 +11,6 @@ inputs:
     required: true
     default: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
 outputs:
-  cluster_name: # id of output
-    description: 'The time we greeted you'
   instance_id: # id of output
     description: 'instance_id of the cluster'
   secret_name: # id of output
@@ -22,6 +20,7 @@ outputs:
 runs:
   using: "composite"
   steps:
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
