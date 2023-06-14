@@ -3,7 +3,7 @@
 function checkError() {
     if [ $? -ne 0 ]
     then
-        echo "Terraform exited with error"
+        echo "$1 exited with error"
         exit 1
     fi
 }
@@ -40,13 +40,13 @@ function waitInstanceReady() {
 client_ip="$(curl -s "https://checkip.amazonaws.com")"
 
 terraform init -backend-config="key=uds-aws-ci-k3d/${SHA:0:7}.tfstate"
-checkError
+checkError "terraform"
 
 terraform plan -var="client_ip=$client_ip"
-checkError
+checkError "terraform"
 
 terraform apply -var="client_ip=$client_ip" --auto-approve
-checkError
+checkError "terraform"
 
 instance_id="$(terraform output -raw instance_id)"
 secret_name="$(terraform output -raw secret_name)"
@@ -63,5 +63,6 @@ aws secretsmanager get-secret-value \
     --output text > ~/.kube/config
 
 zarf tools kubectl get nodes -o wide
+checkError "zarf"
 
 rm -rf .terraform
