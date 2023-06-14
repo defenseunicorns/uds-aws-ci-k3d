@@ -6,14 +6,14 @@ on:
       - "main"
     paths:
       - "terraform/**"
-      - ".github/workflows/**"
+      - ".github/**"
 
   pull_request:
     branches:
       - "main"
     paths:
       - "terraform/**"
-      - ".github/workflows/**"
+      - ".github/**"
 
 permissions:
   id-token: write
@@ -46,8 +46,8 @@ jobs:
         working-directory: terraform
 
       - name: Teardown cluster
+        if: always()
         env:
           SHA: ${{ github.sha }}
-        if: always()
         run: ./teardown-cluster.sh
         working-directory: terraform

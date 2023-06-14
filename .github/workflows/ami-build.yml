@@ -9,14 +9,14 @@ on:
       - "main"
     paths:
       - "packer/**"
-      - ".github/workflows/**"
+      - ".github/**"
 
   pull_request:
     branches:
       - "main"
     paths:
       - "packer/**"
-      - ".github/workflows/**"
+      - ".github/**"
 
 permissions:
   id-token: write
