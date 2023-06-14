@@ -4,14 +4,16 @@ on:
   push:
     branches:
       - "main"
-    paths-ignore:
-      - "**.md"
+    paths:
+      - "terraform/**"
+      - ".github/workflows/**"
 
   pull_request:
     branches:
       - "main"
-    paths-ignore:
-      - "**.md"
+    paths:
+      - "terraform/**"
+      - ".github/workflows/**"
 
 permissions:
   id-token: write
