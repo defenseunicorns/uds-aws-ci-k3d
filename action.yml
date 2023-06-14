@@ -9,7 +9,6 @@ inputs:
   aws_assume_role:  # id of input
     description: 'role for the identity provider to assume'
     required: true
-    default: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
 outputs:
   instance_id: # id of output
     description: 'instance_id of the cluster'
