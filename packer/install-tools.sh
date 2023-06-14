@@ -5,6 +5,7 @@ set -e
 export DOCKER_VERSION="5:24.0.2-1~ubuntu.22.04~jammy"
 export CONTAINERD_VERSION="1.6.21-1"
 export K3D_VERSION="v5.5.1"
+export AWS_CLI_VERSION="2.12.0"
 
 # Install docker
 sudo apt-get update -y
@@ -31,7 +32,7 @@ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG="$K3D
 
 # Install aws cli
 sudo apt-get install unzip -y
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 
