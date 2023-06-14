@@ -27,7 +27,7 @@ source "amazon-ebs" "ubuntu" {
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
-    owners      = ["099720109477"]
+    owners = ["099720109477"]
   }
 }
 
@@ -36,13 +36,13 @@ build {
   sources = ["source.amazon-ebs.ubuntu"]
 
   provisioner "file" {
-    source = "k3d-config.yaml"
+    source      = "k3d-config.yaml"
     destination = "/tmp/k3d-config.yaml"
   }
 
   provisioner "shell" {
     inline = ["sudo mv /tmp/k3d-config.yaml /k3d-config.yaml"]
-}
+  }
 
   provisioner "shell" {
     script  = "./install-tools.sh"
