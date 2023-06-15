@@ -18,7 +18,8 @@ jobs:
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
         # Test passing in role arn and region
-      - name: create_cluster 
+      - name: Create Cluster
+        id: create_cluster 
         uses: defenseunicorns/uds-aws-ci-k3d@action
         with:
           cluster_action: create
