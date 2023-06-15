@@ -43,8 +43,6 @@ runs:
       working-directory: ${{ github.action_path }}/terraform
       run: |
         ${{ github.action_path }}/terraform/create-cluster.sh
-        echo "instance_id=$(terraform output -raw instance_id)" >> $GITHUB_OUTPUT
-        echo "secret_name=$(terraform output -raw secret_name)" >> $GITHUB_OUTPUT
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
       shell: bash
     - name: Teardown cluster
