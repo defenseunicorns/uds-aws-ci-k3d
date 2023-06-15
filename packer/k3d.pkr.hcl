@@ -21,6 +21,7 @@ source "amazon-ebs" "ubuntu" {
   ssh_username    = "ubuntu"
   # ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-20230608
   source_ami = "ami-022c9f1a24f813bf9"
+}
 
 build {
   name    = local.ami_name
