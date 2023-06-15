@@ -17,10 +17,13 @@ inputs:
 outputs:
   instance_id: # id of output
     description: 'instance_id of the cluster'
+    value: ${{ steps.create_cluster.outputs.instance_id }}
   secret_name: # id of output
     description: 'instance_id of the cluster'
+    value: ${{ steps.create_cluster.outputs.secret_name }}
   sha: # id of output
     description: 'sha of the cluster'
+    value: ${{ steps.create_cluster.outputs.sha }}
 runs:
   using: "composite"
   steps:
@@ -33,11 +36,16 @@ runs:
         aws-region: ${{ inputs.aws_region }}
         role-duration-seconds: 21600
     - name: Create cluster
-      if: ${{ inputs.cluster_action == 'create' }} 
-      working-directory: ${{ github.action_path }}/terraform
-      run: ${{ github.action_path }}/terraform/create-cluster.sh
+      id: create_cluster
       env:
         SHA: ${{ github.sha }}
+      if: ${{ inputs.cluster_action == 'create' }} 
+      working-directory: ${{ github.action_path }}/terraform
+      run: |
+        ${{ github.action_path }}/terraform/create-cluster.sh
+        echo "instance_id=$(terraform output -raw instance_id)" >> $GITHUB_OUTPUT
+        echo "secret_name=$(terraform output -raw secret_name)" >> $GITHUB_OUTPUT
+        echo "sha=${SHA}" >> $GITHUB_OUTPUT
       shell: bash
     - name: Teardown cluster
       if: ${{ inputs.cluster_action == 'destroy' }} 
