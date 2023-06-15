@@ -1,0 +1,53 @@
+name: "Test UDS k3d CI infra"
+
+on:
+  push:
+
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-k3d-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Zarf
+        # This uses the default options (latest version of zarf, no init package)
+        uses: defenseunicorns/setup-zarf@main
+        # Test passing in role arn and region
+      - name: create_cluster 
+        uses: defenseunicorns/uds-aws-ci-k3d@action
+        with:
+          cluster_action: create
+          aws_assume_role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          aws_region: us-west-2
+      # Test cluster access in same role
+      - name: Show Cluster
+        run: |
+            zarf tools kubectl get nodes
+            zarf tools kubectl config get-contexts
+      - name: Delete kubeconfig and test secret manager secret
+        run: |
+            echo ${{ steps.create_cluster.outputs.secret_name }}
+            echo ${{ steps.create_cluster.outputs.instance_id }}
+            echo ${{ steps.create_cluster.outputs.sha }}
+            # Cleanup existing kubeconfig
+            rm -rf ~/.kube/config
+            # pull new kubeconfig
+            aws secretsmanager get-secret-value \
+              --secret-id "${{ steps.create_cluster.outputs.secret_name }}" \
+              --query 'SecretString' \
+              --output text > ~/.kube/config
+            # test newly pulled kubeconfig works
+            zarf tools kubectl get nodes
+            zarf tools kubectl config get-contexts
+      # Test with role already assumed
+      - name: destroy_cluster 
+        if: always()
+        uses: defenseunicorns/uds-aws-ci-k3d@action
+        with:
+          cluster_action: destroy
+          aws_assume_role: ""
