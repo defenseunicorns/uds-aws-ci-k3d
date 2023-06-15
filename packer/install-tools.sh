@@ -2,9 +2,10 @@
 
 set -e
 
-export DOCKER_VERSION="5:24.0.2-1~ubuntu.22.04~jammy"
-export CONTAINERD_VERSION="1.6.21-1"
+# renovate: datasource=github-tags depName=k3d-io/k3d versioning=semver
 export K3D_VERSION="v5.5.1"
+
+# renovate: datasource=github-tags depName=aws/aws-cli versioning=semver
 export AWS_CLI_VERSION="2.12.0"
 
 # Install docker
@@ -22,9 +23,9 @@ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update -y
 sudo apt-get install -y \
-    docker-ce="$DOCKER_VERSION" \
-    docker-ce-cli="$DOCKER_VERSION" \
-    containerd.io="$CONTAINERD_VERSION"
+    docker-ce \
+    docker-ce-cli \
+    containerd.io
 
 sudo usermod -aG docker ubuntu
 
