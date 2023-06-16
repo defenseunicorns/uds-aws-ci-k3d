@@ -37,7 +37,7 @@ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG="$K3D
 
 sudo apt-get -y install unzip
 
-awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip"
+curl awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 
