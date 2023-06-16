@@ -45,3 +45,29 @@ This repository contains code for the infrastructure to be used to spin up ephem
 1. Deploy DUBBD to the cluster with Zarf
 
 1. Teardown the cluster
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
+## Modules
+
+No modules.
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
