@@ -36,4 +36,4 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 # unzip is only needed to install aws cli, so we can uninstall
-apt-get purge -y unzip
+sudo apt-get purge -y unzip
