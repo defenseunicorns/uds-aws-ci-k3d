@@ -1,0 +1,12 @@
+name: Scan & Lint Terraform
+on:
+  push:
+    branches:
+      - '!main'
+
+jobs:
+  scan-terraform:
+    uses: defenseunicorns/uds-common-workflows/.github/workflows/terraform-scan.yaml@v1.0.18
+    with:
+      soft-fail: true
+      github-token: $GITHUB_TOKEN 

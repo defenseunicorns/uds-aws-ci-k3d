@@ -1,0 +1,13 @@
+name: Release Workflow
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release:
+    name: Version k3d Action
+    uses: defenseunicorns/uds-common-workflows/.github/workflows/release-terraform.yml@v.1.0.18
+    secrets: inherit
+    with:
+      command: manifest
+      release-type: simple
