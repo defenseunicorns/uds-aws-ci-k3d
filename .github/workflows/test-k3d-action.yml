@@ -22,7 +22,7 @@ jobs:
         id: create_cluster
         env:
           REF: ${{ github.ref_name }}
-        uses: "defenseunicorns/uds-aws-ci-k3d@${REF}"
+        uses: "defenseunicorns/uds-aws-ci-k3d@$REF"
         with:
           cluster_action: create
           aws_assume_role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
