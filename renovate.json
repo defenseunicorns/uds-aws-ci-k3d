@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^.*/install-tools\\.sh$"],
+      "matchStrings": [
+        "# renovate: datasource=github-tags depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?version:\\s*(?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "fileMatch": ["^.*/k3d-config.yaml\\.sh$"],
+      "matchStrings": [
+        "image:\\s+rancher/k3s:v(?<currentValue>[^\"]+)"
+      ],
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "docker",
+      "depName": "rancher/k3s"
+    }
+  ]
+}

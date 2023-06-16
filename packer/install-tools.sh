@@ -2,14 +2,17 @@
 
 set -e
 
-export DOCKER_VERSION="5:24.0.2-1~ubuntu.22.04~jammy"
-export CONTAINERD_VERSION="1.6.21-1"
+
+# renovate: datasource=github-tags depName=k3d-io/k3d versioning=semver
 export K3D_VERSION="v5.5.1"
+
+# renovate: datasource=github-tags depName=aws/aws-cli versioning=semver
+
 export AWS_CLI_VERSION="2.12.0"
 
 # Install docker
 sudo apt-get update -y
-sudo apt-get install ca-certificates curl gnupg -y
+sudo apt-get -y install ca-certificates curl gnupg
 
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -21,10 +24,9 @@ echo \
 sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update -y
-sudo apt-get install -y \
-    docker-ce="$DOCKER_VERSION" \
-    docker-ce-cli="$DOCKER_VERSION" \
-    containerd.io="$CONTAINERD_VERSION"
+
+sudo apt-get install -y docker-ce containerd.io
+
 
 sudo usermod -aG docker ubuntu
 
@@ -32,7 +34,12 @@ sudo usermod -aG docker ubuntu
 curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG="$K3D_VERSION" bash
 
 # Install aws cli
-sudo apt-get install unzip -y
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip"
+
+sudo apt-get -y install unzip
+
+awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
+
+# unzip is only needed to install aws cli, so we can uninstall
+sudo apt-get purge -y unzip
