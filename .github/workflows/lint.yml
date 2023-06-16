@@ -1,8 +1,8 @@
 name: Scan & Lint Terraform
 on:
   push:
-    branches:
-      - '!main'
+    branches-ignore:
+      - main
 
 jobs:
   scan-terraform:
