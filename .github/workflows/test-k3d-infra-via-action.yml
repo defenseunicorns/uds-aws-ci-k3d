@@ -1,13 +1,23 @@
-name: "Test UDS k3d CI infra"
+name: "Test UDS k3d CI Infra and Action"
 
 on:
   push:
+    branches:
+      - "main"
+    paths:
+      - "terraform/**"
+      - ".github/**"
 
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "terraform/**"
+      - ".github/**"
 
 permissions:
   id-token: write
   contents: read
-
 jobs:
   test-k3d-infra:
     runs-on: ubuntu-latest
@@ -18,11 +28,9 @@ jobs:
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
         # Test passing in role arn and region
-      - name: Create Cluster
+      - name: Create Cluster Via Action
         id: create_cluster
-        env:
-          REF: ${{ github.ref_name }}
-        uses: "defenseunicorns/uds-aws-ci-k3d@$REF"
+        uses: ./
         with:
           cluster_action: create
           aws_assume_role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
@@ -48,9 +56,9 @@ jobs:
             zarf tools kubectl get nodes
             zarf tools kubectl config get-contexts
       # Test with role already assumed
-      - name: destroy_cluster 
+      - name: Destroy Cluster via Action 
         if: always()
-        uses: defenseunicorns/uds-aws-ci-k3d@action
+        uses: ./
         with:
           cluster_action: destroy
           aws_assume_role: ""
