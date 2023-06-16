@@ -14,7 +14,7 @@
       "datasourceTemplate": "github-tags"
     },
     {
-      "fileMatch": ["^.*/k3d-config.yaml\\.sh$"],
+      "fileMatch": ["^.*/k3d-config\\.ya?ml$"],
       "matchStrings": [
         "image:\\s+rancher/k3s:v(?<currentValue>[^\"]+)"
       ],
