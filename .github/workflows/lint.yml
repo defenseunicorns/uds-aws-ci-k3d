@@ -6,7 +6,7 @@ on:
 
 jobs:
   scan-terraform:
-    uses: defenseunicorns/uds-common-workflows/.github/workflows/terraform-scan.yaml@v1.0.20
+    uses: defenseunicorns/uds-common-workflows/.github/workflows/terraform-scan.yaml@v1.0.21
     with:
       soft-fail: true
       github-token: $GITHUB_TOKEN 
