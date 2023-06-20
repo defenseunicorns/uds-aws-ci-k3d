@@ -51,6 +51,9 @@ checkError "terraform"
 instance_id="$(terraform output -raw instance_id)"
 secret_name="$(terraform output -raw secret_name)"
 
+echo "instance-id=${instance_id}" >> "$GITHUB_OUTPUT"
+echo "secret-name=${secret_name}" >> "$GITHUB_OUTPUT"
+
 waitInstanceReady "$instance_id"
 
 rm -rf ~/.kube/config
