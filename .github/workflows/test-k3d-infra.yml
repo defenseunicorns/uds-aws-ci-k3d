@@ -4,24 +4,55 @@ on:
   push:
     branches:
       - "main"
-    paths:
-      - "terraform/**"
-      - ".github/**"
+    paths-ignore:
+      - ".gitignore"
+      - "**.md"
+      - "renovate.json"
 
   pull_request:
     branches:
       - "main"
-    paths:
-      - "terraform/**"
-      - ".github/**"
+    paths-ignore:
+      - ".gitignore"
+      - "**.md"
+      - "renovate.json"
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
+  build-ami:
+    runs-on: ubuntu-latest
+    # Only run this job when a PR has changes in the 'packer/' directory, or when a commit with changes to the 'packer/' directory is pushed to the main branch.
+    if: ${{ contains(github.event.pull_request.changed_files, 'packer/') }} || github.event_name == 'push' && contains(github.event.head_commit.modified, 'packer/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha }}
+          aws-region: us-west-2
+          # 21600 seconds == 6 hours
+          role-duration-seconds: 21600
+
+      - name: Packer init
+        run: packer init .
+        working-directory: packer
+
+      - name: Packer build
+        run: packer build .
+        working-directory: packer
+
   test-k3d-infra:
     runs-on: ubuntu-latest
+    needs: build-ami
+    # Only run this job when the 'build-ami' job finishes successfully, or when it doesn't run at all.
+    # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
+    if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == null }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
