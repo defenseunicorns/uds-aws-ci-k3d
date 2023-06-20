@@ -46,7 +46,7 @@ runs:
       working-directory: terraform
       shell: bash
       run: |
-        ./terraform/create-cluster.sh
+        ./create-cluster.sh
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
 
     - name: Teardown cluster
@@ -55,4 +55,4 @@ runs:
         SHA: ${{ github.sha }}
       working-directory: terraform
       shell: bash
-      run: ./terraform/teardown-cluster.sh
+      run: ./teardown-cluster.sh
