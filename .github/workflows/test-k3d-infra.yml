@@ -50,9 +50,9 @@ jobs:
   test-k3d-infra:
     runs-on: ubuntu-latest
     needs: build-ami
-    # Only run this job when the 'build-ami' job finishes successfully, or when it doesn't run at all.
+    # Only run this job when the 'build-ami' job finishes successfully, or when it is skipped.
     # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
-    if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == null }}
+    if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
