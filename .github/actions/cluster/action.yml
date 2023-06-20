@@ -1,0 +1,58 @@
+name: 'K3D Cluster'
+description: 'Create or destroy a k3d cluster in AWS'
+
+inputs:
+  cluster-action:
+    description: 'Create or destroy a k3d cluster in AWS'
+    required: true
+    default: create
+  aws-assume-role:
+    description: 'IAM role for the identity provider to assume'
+    required: false
+    default: ""
+  aws-region:
+    description: 'AWS region to deploy to'
+    required: false
+    default: "us-west-2"
+
+outputs:
+  instance-id:
+    description: 'Instance ID of the EC2 instance'
+    value: ${{ steps.create-cluster.outputs.instance-id }}
+  secret-name:
+    description: 'Name of the Secrets Manager secret used to store the kubeconfig file'
+    value: ${{ steps.create-cluster.outputs.secret-name }}
+  sha:
+    description: 'SHA of the git commit that triggered the workflow'
+    value: ${{ steps.create-cluster.outputs.sha }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      if: ${{ inputs.aws-assume-role != '' }} 
+      with:
+        role-to-assume: ${{ inputs.aws-assume-role }}
+        role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha }}
+        aws-region: ${{ inputs.aws-region }}
+        role-duration-seconds: 21600
+
+    - name: Create cluster
+      id: create-cluster
+      env:
+        SHA: ${{ github.sha }}
+      if: ${{ inputs.cluster-action == 'create' }} 
+      working-directory: terraform
+      shell: bash
+      run: |
+        ./create-cluster.sh
+        echo "sha=${SHA}" >> $GITHUB_OUTPUT
+
+    - name: Teardown cluster
+      if: ${{ inputs.cluster-action == 'destroy' }} 
+      env:
+        SHA: ${{ github.sha }}
+      working-directory: terraform
+      shell: bash
+      run: ./teardown-cluster.sh

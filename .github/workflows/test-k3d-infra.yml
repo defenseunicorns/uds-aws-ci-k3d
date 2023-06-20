@@ -4,18 +4,18 @@ on:
   push:
     branches:
       - "main"
-    paths-ignore:
-      - ".gitignore"
-      - "**.md"
-      - "renovate.json"
+    paths:
+      - ".github/**"
+      - "packer/**"
+      - "terraform/**"
 
   pull_request:
     branches:
       - "main"
-    paths-ignore:
-      - ".gitignore"
-      - "**.md"
-      - "renovate.json"
+    paths:
+      - ".github/**"
+      - "packer/**"
+      - "terraform/**"
 
 permissions:
   id-token: write
@@ -50,35 +50,27 @@ jobs:
   test-k3d-infra:
     runs-on: ubuntu-latest
     needs: build-ami
-    # Only run this job when the 'build-ami' job finishes successfully, or when it doesn't run at all.
+    # Only run this job when the 'build-ami' job finishes successfully, or when it is skipped.
     # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
-    if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == null }}
+    if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
-          role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha }}
-          aws-region: us-west-2
-          # 21600 seconds == 6 hours
-          role-duration-seconds: 21600
 
       - name: Install Zarf
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
 
       - name: Create cluster
-        env:
-          SHA: ${{ github.sha }}
-        run: ./create-cluster.sh
-        working-directory: terraform
+        id: create-cluster
+        uses: ./.github/actions/cluster
+        with:
+          cluster-action: create
+          aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          aws-region: us-west-2
 
       - name: Teardown cluster
         if: always()
-        env:
-          SHA: ${{ github.sha }}
-        run: ./teardown-cluster.sh
-        working-directory: terraform
+        uses: ./.github/actions/cluster
+        with:
+          cluster-action: destroy
