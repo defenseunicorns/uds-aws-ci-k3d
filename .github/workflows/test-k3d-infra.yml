@@ -63,7 +63,7 @@ jobs:
 
       - name: Create cluster
         id: create-cluster
-        uses: ./.github/actions/cluster
+        uses: ./
         with:
           cluster-action: create
           aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
@@ -71,6 +71,6 @@ jobs:
 
       - name: Teardown cluster
         if: always()
-        uses: ./.github/actions/cluster
+        uses: ./
         with:
           cluster-action: destroy
