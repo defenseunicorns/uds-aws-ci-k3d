@@ -1,14 +1,12 @@
 # uds-aws-ci-k3d
 
-This repository contains code for the infrastructure to be used to spin up ephemeral k3d clusters in AWS for DUBBD CI.
+This repository contains code for the infrastructure used to spin up ephemeral k3d clusters in AWS for DUBBD CI.
 
 ## Amazon Machine Image (AMI)
 
 - The code for the AMI is in the `packer/` directory
 
-- An AMI is built and pushed to the CI AWS account in the `.github/workflows/ami-build.yml` workflow
-
-- The AMI is rebuilt nightly to ensure the tools and dependencies stay updated
+- An AMI is built and pushed to the CI AWS account in the `.github/workflows/test-k3d-infra.yml` workflow
 
 - The AMI is using Ubuntu 22.04 as the base OS, and has the following tools installed:
   - docker
