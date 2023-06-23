@@ -4,18 +4,18 @@ on:
   push:
     branches:
       - "main"
-    paths:
-      - ".github/**"
-      - "packer/**"
-      - "terraform/**"
+    paths-ignore:
+      - "**.md"
+      - "**.json"
+      - ".gitignore"
 
   pull_request:
     branches:
       - "main"
-    paths:
-      - ".github/**"
-      - "packer/**"
-      - "terraform/**"
+    paths-ignore:
+      - "**.md"
+      - "**.json"
+      - ".gitignore"
 
 permissions:
   id-token: write
