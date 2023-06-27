@@ -14,6 +14,10 @@ inputs:
     description: 'AWS region to deploy to'
     required: false
     default: "us-west-2"
+  unique-id:  # id of input
+    description: 'unique id of cluster'
+    required: false
+    default: ""
 
 outputs:
   instance-id:
@@ -25,6 +29,9 @@ outputs:
   sha:
     description: 'SHA of the git commit that triggered the workflow'
     value: ${{ steps.create-cluster.outputs.sha }}
+  unique-id: # id of output
+    description: 'unique id of the cluster'
+    value: ${{ steps.create_cluster.outputs.unique_id }}
 
 runs:
   using: "composite"
@@ -38,21 +45,39 @@ runs:
         aws-region: ${{ inputs.aws-region }}
         role-duration-seconds: 21600
 
+    - name: Use provided unique ID
+      shell: bash
+      run: echo "ID=${{ inputs.unique-id }}" >> $GITHUB_ENV
+      if: ${{ inputs.unique-id != '' }}
+
+    - name: Generate unique ID from SHA and job name
+      shell: bash
+      env:
+        JOB_ID: ${{ github.job }}
+        UNIQUE: "${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}"
+        SHA: ${{ github.sha }}
+      run: |
+        GENERATED_ID=$(echo "${SHA:0:7}-${UNIQUE}") 
+        echo "ID=$GENERATED_ID" >> $GITHUB_ENV
+      if: ${{ inputs.unique-id == '' }} 
+
     - name: Create cluster
       id: create-cluster
       env:
         SHA: ${{ github.sha }}
+        ID: ${{ env.ID }}
       if: ${{ inputs.cluster-action == 'create' }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
       run: |
         ${{ github.action_path }}/terraform/create-cluster.sh
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
-
+        echo "unique_id=${ID}" >> $GITHUB_OUTPUT
     - name: Teardown cluster
       if: ${{ inputs.cluster-action == 'destroy' }} 
       env:
         SHA: ${{ github.sha }}
+        ID: ${{ env.ID }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
       run: ${{ github.action_path }}/terraform/teardown-cluster.sh
