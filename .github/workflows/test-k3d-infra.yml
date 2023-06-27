@@ -1,4 +1,4 @@
-name: "Test UDS k3d CI infra"
+name: "Test UDS k3d CI Infra"
 
 on:
   push:
@@ -49,10 +49,15 @@ jobs:
 
   test-k3d-infra:
     runs-on: ubuntu-latest
+    # Run if changes on are picked up in terraform or workflow files. Depend on build-ami if that job triggers.
     needs: build-ami
     # Only run this job when the 'build-ami' job finishes successfully, or when it is skipped.
     # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
     if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
+    # Test with parallel jobs using and not using unique input
+    strategy:
+      matrix: 
+        unique_id: ["", "uid-12345"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -61,16 +66,36 @@ jobs:
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
 
-      - name: Create cluster
-        id: create-cluster
+        # Test passing in role arn and region
+      - name: Create Cluster Via Action
+        id: create_cluster
         uses: ./
         with:
           cluster-action: create
           aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           aws-region: us-west-2
-
-      - name: Teardown cluster
+          unique-id: ${{ matrix.unique_id }}
+      # Test cluster access in same job
+      - name: Show Cluster
+        run: |
+            zarf tools kubectl get nodes
+            zarf tools kubectl config get-contexts
+      # Test cluster access would work across jobs via secret value
+      - name: Delete kubeconfig and test secret manager secret
+        run: |
+            rm -rf ~/.kube/config
+            aws secretsmanager get-secret-value \
+              --secret-id "${{ steps.create_cluster.outputs.secret-name }}" \
+              --query 'SecretString' \
+              --output text > ~/.kube/config
+            zarf tools kubectl get nodes
+            zarf tools kubectl config get-contexts
+      # Test with role already assumed
+      - name: Destroy Cluster via Action 
         if: always()
         uses: ./
         with:
           cluster-action: destroy
+          aws-assume-role: ""
+          unique-id: ${{ matrix.unique_id }}
+
