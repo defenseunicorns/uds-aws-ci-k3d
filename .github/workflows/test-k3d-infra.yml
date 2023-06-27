@@ -22,10 +22,31 @@ permissions:
   contents: read
 
 jobs:
-  build-ami:
+  # use paths-filter action to derive which jobs to run based on changes
+  check-changes:
     runs-on: ubuntu-latest
-    # Only run this job when a PR has changes in the 'packer/' directory, or when a commit with changes to the 'packer/' directory is pushed to the main branch.
-    if: ${{ contains(github.event.pull_request.changed_files, 'packer/') }} || github.event_name == 'push' && contains(github.event.head_commit.modified, 'packer/')
+    outputs:
+      packer: ${{ steps.filter.outputs.packer }}
+      terraform: ${{ steps.filter.outputs.terraform }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          packer:
+            - 'packer/**'
+          terraform:
+            - terraform/**
+          workflows:
+            - action.yml
+            - .github/**   
+
+  build-ami:
+    needs: check-changes
+    if: needs.check-changes.outputs.packer == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -49,14 +70,13 @@ jobs:
 
   test-k3d-infra:
     runs-on: ubuntu-latest
-    needs: build-ami
+    # Run if changes on are picked up in terraform or workflow files. Depend on build-ami if that job triggers.
+    needs: [build-ami, check-changes]
+    if: (needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped') && (needs.check-changes.outputs.terraform == 'true' || needs.check-changes.outputs.workflow == 'true' )
     # Test with parallel jobs using and not using unique input
     strategy:
       matrix: 
         unique_id: ["", "uid-12345"]
-    # Only run this job when the 'build-ami' job finishes successfully, or when it is skipped.
-    # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
-    if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
