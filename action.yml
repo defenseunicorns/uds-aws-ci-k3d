@@ -49,7 +49,7 @@ runs:
 
     - name: Use provided unique ID
       shell: bash
-      run: echo "ID=${{ github.event.inputs.unique_id }}" >> $GITHUB_ENV
+      run: echo "ID=${{ inputs.unique_id }}" >> $GITHUB_ENV
       if: ${{ inputs.unique_id != '' }}
 
     - name: Generate unique ID from SHA and job name
@@ -60,7 +60,7 @@ runs:
       run: |
         GENERATED_ID=$(echo "${SHA:0:7}-${JOB_ID}") 
         #| sha256sum | cut -d" " -f1)
-        echo "ID=$GENERATED_ID" >> $GITUB_ENV
+        echo "ID=$GENERATED_ID" >> $GITHUB_ENV
       if: ${{ inputs.unique_id == '' }} 
 
     - name: Create cluster
