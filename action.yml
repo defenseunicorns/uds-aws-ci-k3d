@@ -56,7 +56,7 @@ runs:
       shell: bash
       env:
         JOB_ID: ${{ github.job }}
-        UNIQUE: "${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}"
+        UNIQUE: "${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-${{ github.action }}"
         SHA: ${{ github.sha }}
       run: |
       
