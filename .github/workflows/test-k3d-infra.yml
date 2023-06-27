@@ -38,10 +38,10 @@ jobs:
           packer:
             - 'packer/**'
           terraform:
-            - terraform/**
+            - 'terraform/**'
           workflows:
             - action.yml
-            - .github/**   
+            - '.github/**'
 
   build-ami:
     needs: check-changes
