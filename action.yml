@@ -31,8 +31,8 @@ outputs:
   unique_id: # id of output
     description: 'unique id of the cluster'
     value: ${{ steps.create_cluster.outputs.unique_id }}
-  unique_id: # id of output
-    description: 'unique id of the cluster'
+  job_id: # id of output
+    description: 'job id of the cluster'
     value: ${{ steps.create_cluster.outputs.job_id }}
 runs:
   using: "composite"
@@ -48,10 +48,12 @@ runs:
 
 
     - name: Use provided unique ID
+      shell: bash
       run: echo "ID=${{ github.event.inputs.unique_id }}" >> $GITHUB_ENV
       if: github.event.inputs.unique_id != ''
 
     - name: Generate unique ID from SHA and job name
+      shell: bash
       env:
         JOB_ID: ${{ github.job }}
         SHA: ${{ github.sha }}
