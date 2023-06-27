@@ -14,6 +14,10 @@ inputs:
     description: 'aws region'
     required: false
     default: "us-west-2"
+  random_id:  # id of input
+    description: 'unique id of cluster'
+    required: false
+    default: ""
 outputs:
   instance_id: # id of output
     description: 'instance_id of the cluster'
@@ -24,6 +28,12 @@ outputs:
   sha: # id of output
     description: 'sha of the cluster'
     value: ${{ steps.create_cluster.outputs.sha }}
+  unique_id: # id of output
+    description: 'unique id of the cluster'
+    value: ${{ steps.create_cluster.outputs.unique_id }}
+  unique_id: # id of output
+    description: 'unique id of the cluster'
+    value: ${{ steps.create_cluster.outputs.job_id }}
 runs:
   using: "composite"
   steps:
@@ -35,20 +45,43 @@ runs:
         role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha }}
         aws-region: ${{ inputs.aws_region }}
         role-duration-seconds: 21600
+
+
+    - name: Use provided unique ID
+      run: echo "ID=${{ github.event.inputs.unique_id }}" >> $GITHUB_ENV
+      if: github.event.inputs.unique_id != ''
+
+    - name: Generate unique ID from SHA and job name
+      env:
+        JOB_ID: ${{ github.job }}
+        SHA: ${{ github.sha }}
+      run: |
+        GENERATED_ID=$(echo "${SHA:0:7}-${JOB_ID}") 
+        #| sha256sum | cut -d" " -f1)
+        echo "ID=$GENERATED_ID" >> $GITUB_ENV
+      if: ${{ inputs.random_id != '' }} 
+
     - name: Create cluster
       id: create_cluster
       env:
+        JOB_ID: ${{ github.job }}
         SHA: ${{ github.sha }}
+        ID: ${{ env.ID }}
       if: ${{ inputs.cluster_action == 'create' }} 
       working-directory: ${{ github.action_path }}/terraform
       run: |
         ${{ github.action_path }}/terraform/create-cluster.sh
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
+        echo "job_id=${JOB_ID}" >> $GITHUB_OUTPUT
+        echo "unique_id=${ID}" >> $GITHUB_OUTPUT
       shell: bash
-    - name: Teardown cluster
-      if: ${{ inputs.cluster_action == 'destroy' }} 
+
+    - name: Teardown cluster explicit id
+      if: ${{ inputs.cluster_action == 'destroy' }}
       shell: bash
       env:
+        JOB_ID: ${{ github.job }}
         SHA: ${{ github.sha }}
+        ID: ${{ env.ID }}
       working-directory: ${{ github.action_path }}/terraform
-      run: ${{ github.action_path }}/terraform/teardown-cluster.sh
+      run: ${{ github.action_path }}/terraform/teardown-cluster.sh 

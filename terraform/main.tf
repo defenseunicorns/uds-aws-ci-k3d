@@ -22,6 +22,8 @@ locals {
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
   })
+  suffix = var.suffix != "" ? "${var.suffix}-${random_id.unique_id.hex}" : random_id.unique_id.hex
+  
 }
 
 resource "aws_instance" "ec2_instance" {
@@ -36,14 +38,16 @@ resource "aws_instance" "ec2_instance" {
     volume_type           = "gp2"
     delete_on_termination = true
   }
+  tags = tomap({
+      "Name"         = "uds-ci-k3d-${local.suffix}"
+      "ManagedBy"    = "Terraform"
+      "CreationDate" = time_static.creation_time.rfc3339
+  }))
 
-  tags = {
-    "Name" = "uds-ci-k3d"
-  }
 }
 
 resource "aws_security_group" "security_group" {
-  name        = "kube-api-access-${random_id.unique_id.hex}"
+  name        = "kube-api-access-${local.suffix}"
   description = "Allow Kube API access only from GitHub runner"
 
   ingress {
@@ -62,12 +66,12 @@ resource "aws_security_group" "security_group" {
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
-  name = "upload_kubeconfig-${random_id.unique_id.hex}"
+  name = "upload_kubeconfig-${local.suffix}"
   role = aws_iam_role.instance_role.name
 }
 
 resource "aws_iam_role" "instance_role" {
-  name = "upload_kubeconfig-${random_id.unique_id.hex}"
+  name = "upload_kubeconfig-${local.suffix}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -84,7 +88,7 @@ resource "aws_iam_role" "instance_role" {
 }
 
 resource "aws_iam_policy" "secrets_manager_policy" {
-  name        = "upload_kubeconfig_policy-${random_id.unique_id.hex}"
+  name        = "upload_kubeconfig_policy-${local.suffix}"
   description = "Allows creating secrets in secrets manager"
 
   policy = jsonencode({
@@ -105,7 +109,7 @@ resource "aws_iam_role_policy_attachment" "secrets_manager" {
 }
 
 resource "aws_secretsmanager_secret" "kubeconfig" {
-  name        = "uds-ci-k3d-${random_id.unique_id.hex}/k3d-kubeconfig"
+  name        = "uds-ci-k3d-${local.suffix}/k3d-kubeconfig"
   description = "UDS CI k3d kubeconfig"
 }
 

@@ -39,7 +39,7 @@ function waitInstanceReady() {
 
 client_ip="$(curl -s "https://checkip.amazonaws.com")"
 
-terraform init -backend-config="key=uds-aws-ci-k3d/${SHA:0:7}.tfstate"
+terraform init -backend-config="key=uds-aws-ci-k3d/${ID}.tfstate"
 checkError "terraform"
 
 terraform plan -var="client_ip=$client_ip"
@@ -69,3 +69,5 @@ zarf tools kubectl get nodes -o wide
 checkError "zarf"
 
 rm -rf .terraform
+
+
