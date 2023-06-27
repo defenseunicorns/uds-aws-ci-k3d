@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       # Test with parallel jobs using and not using unique input
-      matrix:
+     matrix: 
         unique_id: ["", "", "test-unique-id-12345"]
     steps:
       - name: Checkout code
@@ -70,4 +70,3 @@ jobs:
           aws_assume_role: ""
           unique_id: ${{ matrix.unique_id }}
 
-          
