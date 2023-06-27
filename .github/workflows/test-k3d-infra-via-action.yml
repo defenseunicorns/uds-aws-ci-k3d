@@ -50,14 +50,14 @@ jobs:
             zarf tools kubectl config get-contexts
       - name: Delete kubeconfig and test secret manager secret
         run: |
-            echo ${{ steps.create_cluster.outputs.secret_name }}
-            echo ${{ steps.create_cluster.outputs.instance_id }}
+            echo ${{ steps.create_cluster.outputs.secret-name }}
+            echo ${{ steps.create_cluster.outputs.instance-id }}
             echo ${{ steps.create_cluster.outputs.sha }}
             # Cleanup existing kubeconfig
             rm -rf ~/.kube/config
             # pull new kubeconfig
             aws secretsmanager get-secret-value \
-              --secret-id "${{ steps.create_cluster.outputs.secret_name }}" \
+              --secret-id "${{ steps.create_cluster.outputs.secret-name }}" \
               --query 'SecretString' \
               --output text > ~/.kube/config
             # test newly pulled kubeconfig works
