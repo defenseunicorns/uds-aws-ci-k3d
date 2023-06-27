@@ -72,7 +72,7 @@ runs:
       run: |
         ${{ github.action_path }}/terraform/create-cluster.sh
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
-        echo "unique_id=${ID}" >> $GITHUB_OUTPUT
+        echo "unique-id=${ID}" >> $GITHUB_OUTPUT
     - name: Teardown cluster
       if: ${{ inputs.cluster-action == 'destroy' }} 
       env:
