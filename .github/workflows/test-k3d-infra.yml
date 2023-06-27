@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     # Run if changes on are picked up in terraform or workflow files. Depend on build-ami if that job triggers.
     needs: [build-ami, check-changes]
-    if: (needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped') && (needs.check-changes.outputs.terraform == 'true' || needs.check-changes.outputs.workflows == 'true' )
+    if: (needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped') 
     # Test with parallel jobs using and not using unique input
     strategy:
       matrix: 
