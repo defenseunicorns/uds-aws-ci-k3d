@@ -2,36 +2,36 @@
 name: 'K3D Cluster'
 description: 'Create or destroy a k3d cluster'
 inputs:
-  cluster_action:  # id of input
+  cluster-action:  # id of input
     description: 'Create or destroy'
     required: true
     default: create
-  aws_assume_role:  # id of input
+  aws-assume-role:  # id of input
     description: 'role for the identity provider to assume'
     required: false
     default: ""
-  aws_region:  # id of input
+  aws-region:  # id of input
     description: 'aws region'
     required: false
     default: "us-west-2"
-  unique_id:  # id of input
+  unique-id:  # id of input
     description: 'unique id of cluster'
     required: false
     default: ""
 outputs:
-  instance_id: # id of output
+  instance-id: # id of output
     description: 'instance_id of the cluster'
     value: ${{ steps.create_cluster.outputs.instance_id }}
-  secret_name: # id of output
+  secret-name: # id of output
     description: 'instance_id of the cluster'
     value: ${{ steps.create_cluster.outputs.secret_name }}
   sha: # id of output
     description: 'sha of the cluster'
     value: ${{ steps.create_cluster.outputs.sha }}
-  unique_id: # id of output
+  unique-id: # id of output
     description: 'unique id of the cluster'
     value: ${{ steps.create_cluster.outputs.unique_id }}
-  job_id: # id of output
+  job-id: # id of output
     description: 'job id of the cluster'
     value: ${{ steps.create_cluster.outputs.job_id }}
 runs:
@@ -39,18 +39,18 @@ runs:
   steps:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
-      if: ${{ inputs.aws_assume_role != '' }} 
+      if: ${{ inputs.aws-assume-role != '' }} 
       with:
-        role-to-assume: ${{ inputs.aws_assume_role }}
+        role-to-assume: ${{ inputs.aws-assume-role }}
         role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha }}
-        aws-region: ${{ inputs.aws_region }}
+        aws-region: ${{ inputs.aws-region }}
         role-duration-seconds: 21600
 
 
     - name: Use provided unique ID
       shell: bash
-      run: echo "ID=${{ inputs.unique_id }}" >> $GITHUB_ENV
-      if: ${{ inputs.unique_id != '' }}
+      run: echo "ID=${{ inputs.unique-id }}" >> $GITHUB_ENV
+      if: ${{ inputs.unique-id != '' }}
 
     - name: Generate unique ID from SHA and job name
       shell: bash
@@ -62,7 +62,7 @@ runs:
         GENERATED_ID=$(echo "${SHA:0:7}-${UNIQUE}") 
         #| sha256sum | cut -d" " -f1)
         echo "ID=$GENERATED_ID" >> $GITHUB_ENV
-      if: ${{ inputs.unique_id == '' }} 
+      if: ${{ inputs.unique-id == '' }} 
 
     - name: Create cluster
       id: create_cluster
@@ -70,7 +70,7 @@ runs:
         JOB_ID: ${{ github.job }}
         SHA: ${{ github.sha }}
         ID: ${{ env.ID }}
-      if: ${{ inputs.cluster_action == 'create' }} 
+      if: ${{ inputs.cluster-action == 'create' }} 
       working-directory: ${{ github.action_path }}/terraform
       run: |
         ${{ github.action_path }}/terraform/create-cluster.sh
@@ -80,7 +80,7 @@ runs:
       shell: bash
 
     - name: Teardown cluster explicit id
-      if: ${{ inputs.cluster_action == 'destroy' }}
+      if: ${{ inputs.cluster-action == 'destroy' }}
       shell: bash
       env:
         JOB_ID: ${{ github.job }}

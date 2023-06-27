@@ -39,10 +39,10 @@ jobs:
         id: create_cluster
         uses: ./
         with:
-          cluster_action: create
-          aws_assume_role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
-          aws_region: us-west-2
-          unique_id: ${{ matrix.unique_id }}
+          cluster-action: create
+          aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          aws-region: us-west-2
+          unique-id: ${{ matrix.unique_id }}
       # Test cluster access in same role
       - name: Show Cluster
         run: |
@@ -68,7 +68,7 @@ jobs:
         if: always()
         uses: ./
         with:
-          cluster_action: destroy
-          aws_assume_role: ""
-          unique_id: ${{ matrix.unique_id }}
+          cluster-action: destroy
+          aws-assume-role: ""
+          unique-id: ${{ matrix.unique_id }}
 
