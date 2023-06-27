@@ -42,10 +42,10 @@ client_ip="$(curl -s "https://checkip.amazonaws.com")"
 terraform init -backend-config="key=uds-aws-ci-k3d/${ID}.tfstate"
 checkError "terraform"
 
-terraform plan -var="client_ip=$client_ip"
+terraform plan -var="client_ip=$client_ip" -var="suffix=${ID}"
 checkError "terraform"
 
-terraform apply -var="client_ip=$client_ip" --auto-approve
+terraform apply -var="client_ip=$client_ip" -var="suffix=${ID}" --auto-approve
 checkError "terraform"
 
 instance_id="$(terraform output -raw instance_id)"

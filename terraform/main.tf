@@ -32,6 +32,8 @@ locals {
   
 }
 
+resource "time_static" "creation_time" {}
+
 resource "aws_instance" "ec2_instance" {
   ami                    = data.aws_ami.latest_ubuntu_ami.image_id
   instance_type          = "m5.4xlarge"                                   # vCPU: 16 -- RAM: 64GB
