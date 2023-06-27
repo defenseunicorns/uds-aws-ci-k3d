@@ -27,7 +27,7 @@ jobs:
     strategy:
       # Test with parallel jobs using and not using unique input
      matrix: 
-        unique_id: ["", "", "test-unique-id-12345"]
+        unique_id: ["", "uid-12345"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

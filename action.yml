@@ -56,10 +56,9 @@ runs:
       shell: bash
       env:
         JOB_ID: ${{ github.job }}
-        UNIQUE: "${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-${{ github.action }}"
+        UNIQUE: "${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}"
         SHA: ${{ github.sha }}
       run: |
-      
         GENERATED_ID=$(echo "${SHA:0:7}-${UNIQUE}") 
         #| sha256sum | cut -d" " -f1)
         echo "ID=$GENERATED_ID" >> $GITHUB_ENV
