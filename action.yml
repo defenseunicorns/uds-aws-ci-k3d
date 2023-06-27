@@ -14,7 +14,7 @@ inputs:
     description: 'aws region'
     required: false
     default: "us-west-2"
-  random_id:  # id of input
+  unique_id:  # id of input
     description: 'unique id of cluster'
     required: false
     default: ""
@@ -50,7 +50,7 @@ runs:
     - name: Use provided unique ID
       shell: bash
       run: echo "ID=${{ github.event.inputs.unique_id }}" >> $GITHUB_ENV
-      if: github.event.inputs.unique_id != ''
+      if: ${{ inputs.unique_id != '' }}
 
     - name: Generate unique ID from SHA and job name
       shell: bash
@@ -61,7 +61,7 @@ runs:
         GENERATED_ID=$(echo "${SHA:0:7}-${JOB_ID}") 
         #| sha256sum | cut -d" " -f1)
         echo "ID=$GENERATED_ID" >> $GITUB_ENV
-      if: ${{ inputs.random_id != '' }} 
+      if: ${{ inputs.unique_id == '' }} 
 
     - name: Create cluster
       id: create_cluster
