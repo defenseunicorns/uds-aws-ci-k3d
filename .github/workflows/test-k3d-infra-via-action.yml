@@ -69,3 +69,5 @@ jobs:
           cluster_action: destroy
           aws_assume_role: ""
           unique_id: ${{ matrix.unique_id }}
+
+          
