@@ -60,7 +60,7 @@ runs:
         SHA: ${{ github.sha }}
       run: |
       
-        GENERATED_ID=$(echo "${SHA:0:7}-${JOB_ID}-${UNIQUE}") 
+        GENERATED_ID=$(echo "${SHA:0:7}-${UNIQUE}") 
         #| sha256sum | cut -d" " -f1)
         echo "ID=$GENERATED_ID" >> $GITHUB_ENV
       if: ${{ inputs.unique_id == '' }} 
