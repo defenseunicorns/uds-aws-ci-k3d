@@ -23,6 +23,12 @@ locals {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
   })
   suffix = var.suffix != "" ? "${var.suffix}-${random_id.unique_id.hex}" : random_id.unique_id.hex
+
+  tags = tomap({
+      "Name"         = "uds-ci-k3d-${local.suffix}"
+      "ManagedBy"    = "Terraform"
+      "CreationDate" = time_static.creation_time.rfc3339
+  })
   
 }
 
@@ -38,11 +44,7 @@ resource "aws_instance" "ec2_instance" {
     volume_type           = "gp2"
     delete_on_termination = true
   }
-  tags = tomap({
-      "Name"         = "uds-ci-k3d-${local.suffix}"
-      "ManagedBy"    = "Terraform"
-      "CreationDate" = time_static.creation_time.rfc3339
-  }))
+  tags = local.tags
 
 }
 
@@ -63,11 +65,13 @@ resource "aws_security_group" "security_group" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = local.tags
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
   name = "upload_kubeconfig-${local.suffix}"
   role = aws_iam_role.instance_role.name
+  tags = local.tags
 }
 
 resource "aws_iam_role" "instance_role" {
@@ -85,6 +89,7 @@ resource "aws_iam_role" "instance_role" {
       }
     ]
   })
+    tags = local.tags
 }
 
 resource "aws_iam_policy" "secrets_manager_policy" {
@@ -101,16 +106,19 @@ resource "aws_iam_policy" "secrets_manager_policy" {
       },
     ]
   })
+    tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_manager" {
   role       = aws_iam_role.instance_role.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
+    tags = local.tags
 }
 
 resource "aws_secretsmanager_secret" "kubeconfig" {
   name        = "uds-ci-k3d-${local.suffix}/k3d-kubeconfig"
   description = "UDS CI k3d kubeconfig"
+    tags = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "kubeconfig" {
