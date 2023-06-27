@@ -108,19 +108,19 @@ resource "aws_iam_policy" "secrets_manager_policy" {
       },
     ]
   })
-    tags = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_manager" {
   role       = aws_iam_role.instance_role.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
-    tags = local.tags
+
 }
 
 resource "aws_secretsmanager_secret" "kubeconfig" {
   name        = "uds-ci-k3d-${local.suffix}/k3d-kubeconfig"
   description = "UDS CI k3d kubeconfig"
-    tags = local.tags
+  tags = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "kubeconfig" {
