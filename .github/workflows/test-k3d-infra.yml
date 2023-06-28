@@ -55,9 +55,6 @@ jobs:
     # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
     if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
     # Test with parallel jobs using and not using unique input
-    strategy:
-      matrix: 
-        unique_id: ["", "uid-12345"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -65,6 +62,10 @@ jobs:
       - name: Install Zarf
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
+
+      - name: Generate unique id
+        id: unique-id
+        run: echo "unique-id=$(openssl rand -hex 8)" >> $GITHUB_OUTPUT
 
         # Test passing in role arn and region
       - name: Create Cluster Via Action
@@ -74,7 +75,7 @@ jobs:
           cluster-action: create
           aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           aws-region: us-west-2
-          unique-id: ${{ matrix.unique_id }}
+          unique-id: ${{ steps.unique-id.outputs.unique-id }}
       # Test cluster access in same job
       - name: Show Cluster
         run: |
@@ -97,5 +98,4 @@ jobs:
         with:
           cluster-action: destroy
           aws-assume-role: ""
-          unique-id: ${{ matrix.unique_id }}
-
+          unique-id: ${{ steps.unique-id.outputs.unique-id }}

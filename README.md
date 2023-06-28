@@ -44,4 +44,31 @@ This repository contains code for the infrastructure used to spin up ephemeral k
 
 1. Teardown the cluster
 
+## Usage
 
+### Create a k3d cluster in AWS
+
+```yaml
+- name: Generate unique id
+  id: unique-id
+  run: echo "unique-id=$(openssl rand -hex 8)" >> $GITHUB_OUTPUT
+
+- name: Create k3d cluster
+   id: create-cluster
+   uses: defenseunicorns/uds-aws-ci-k3d@v0.0.3
+   with:
+     cluster-action: create
+     aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+     aws-region: us-west-2
+     unique-id: ${{ steps.unique-id.outputs.unique-id }}
+```
+
+### Teardown k3d cluster in AWS
+
+```yaml
+- name: Teardown k3d cluster
+  if: always()
+  uses: defenseunicorns/uds-aws-ci-k3d@v0.0.3
+  with:
+    cluster-action: destroy
+```
