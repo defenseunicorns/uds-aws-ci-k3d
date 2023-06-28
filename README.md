@@ -46,7 +46,36 @@ This repository contains code for the infrastructure used to spin up ephemeral k
 
 ## Usage
 
-### Create a k3d cluster in AWS
+***Note***: This action is built to use AWS infrastructure in the Defense Unicorns CI account. It uses an existing S3 bucket and DynamoDB table for state storage and state locking.
+
+To use this action in your repository, reach out to @lucasrod16 or @zachariahmiller to setup your repo with permissions to assume the IAM role. You will need the ARN of the IAM role used to authenticate to AWS stored as a GitHub Actions secret in your repository. See the examples below for how to use the `aws-assume-role` input to specify the IAM role ARN as a GitHub Actions secret.
+
+### Create and destroy a k3d cluster in AWS
+
+***Note***: If you are using this action in multiple, parallel jobs running on the same git commit, please reference the `Create and destroy a k3d cluster in AWS in parallel jobs` section below.
+
+```yaml
+- name: Create k3d cluster
+   id: create-cluster
+   uses: defenseunicorns/uds-aws-ci-k3d@v0.0.3
+   with:
+     cluster-action: create
+     aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+     aws-region: us-west-2
+
+# Deploy and run tests
+
+- name: Teardown k3d cluster
+  if: always()
+  uses: defenseunicorns/uds-aws-ci-k3d@v0.0.3
+  with:
+    cluster-action: destroy
+```
+
+
+### Create and destroy a k3d cluster in AWS in parallel jobs
+
+***Note***: This example uses a `unique-id` for cases when this action is used to spin up k3d clusters in parallel jobs triggered by the same git commit.
 
 ```yaml
 - name: Generate unique id
@@ -61,14 +90,13 @@ This repository contains code for the infrastructure used to spin up ephemeral k
      aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
      aws-region: us-west-2
      unique-id: ${{ steps.unique-id.outputs.unique-id }}
-```
 
-### Teardown k3d cluster in AWS
+# Deploy and run tests
 
-```yaml
 - name: Teardown k3d cluster
   if: always()
   uses: defenseunicorns/uds-aws-ci-k3d@v0.0.3
   with:
     cluster-action: destroy
+    unique-id: ${{ steps.unique-id.outputs.unique-id }}
 ```
