@@ -26,6 +26,10 @@ inputs:
     description: 'Enable GPU. Options include none or all'
     required: false
     default: "none"
+  k3s-version:
+    description: 'version of k3s'
+    required: false
+    default: "v1.26.6+k3s1"
   unique-id:  # id of input
     description: 'unique id of cluster'
     required: false
@@ -62,16 +66,13 @@ runs:
       run: echo "ID=${{ inputs.unique-id }}" >> $GITHUB_ENV
       if: ${{ inputs.unique-id != '' }}
 
-    - name: Set config file to use
+    - name: Set configs to use
       shell: bash
       run: |
-        if [[ "${{inputs.gpu }}" == "none" ]]; then 
-            CONFIG_FILE="k3d-${{ inputs.cni }}.yaml"
-        else
-            CONFIG_FILE="k3d-${{ inputs.cni }}-gpu.yaml"
-        fi
-        echo "K3D_CONFIG=${CONFIG_FILE}" >> $GITHUB_ENV
-
+        echo "GPU=${{ inputs.gpu }}" >> $GITHUB_ENV
+        echo "CNI=${{ inputs.cni }}" >> $GITHUB_ENV
+        echo "INSTANCE_SIZE=${{ inputs.instance-size }}" >> $GITHUB_ENV
+        echo "K3S_VERSION=${{ inputs.k3s-version }}" >> $GITHUB_ENV
 
     - name: Generate unique ID from SHA and job name
       shell: bash

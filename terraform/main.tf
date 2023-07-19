@@ -21,7 +21,8 @@ locals {
   init_cluster_template = templatefile("${path.module}/templates/init-cluster.tpl",
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
-      k3d_config = var.k3d_config
+      gpu       = var.gpu
+      cni       = var.cni
   })
   suffix = var.suffix != "" ? "${var.suffix}-${random_id.unique_id.hex}" : random_id.unique_id.hex
 
