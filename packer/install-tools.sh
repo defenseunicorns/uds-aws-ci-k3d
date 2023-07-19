@@ -41,10 +41,10 @@ curl -sL "https://github.com/defenseunicorns/zarf/releases/download/${$ZARF_VERS
 sudo chmod +x /usr/local/bin/zarf
 
 # Pull down zarf k3d setup package
-# zarf package pull "ghcr.io/defenseunicorns/packages/k3d-local:${DUBBD_VERSION//v}-amd64"
+# zarf package pull "oci://ghcr.io/defenseunicorns/packages/k3d-local:${DUBBD_VERSION//v}-amd64"
 
 # pull down dubbd
-zarf package pull "ghcr.io/defenseunicorns/packages/dubbd-k3d:${DUBBD_VERSION//v}-amd64"
+zarf package pull "oci://ghcr.io/defenseunicorns/packages/dubbd-k3d:${DUBBD_VERSION//v}-amd64"
 
 # Install aws cli
 sudo apt-get -y install unzip

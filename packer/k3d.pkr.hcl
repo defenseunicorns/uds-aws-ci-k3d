@@ -27,11 +27,6 @@ build {
   name    = local.ami_name
   sources = ["source.amazon-ebs.ubuntu"]
 
-  provisioner "file" {
-    source      = "k3d-config.yaml"
-    destination = "/tmp/k3d-config.yaml"
-  }
-
   provisioner "shell" {
     script  = "./install-tools.sh"
     timeout = "15m"

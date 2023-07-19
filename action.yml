@@ -23,7 +23,7 @@ inputs:
     required: false
     default: "calico"
   gpu:
-    description: 'Enable GPU. Options include none, all, 1, 2, etc'
+    description: 'Enable GPU. Options include none or all'
     required: false
     default: "none"
   unique-id:  # id of input
@@ -62,6 +62,17 @@ runs:
       run: echo "ID=${{ inputs.unique-id }}" >> $GITHUB_ENV
       if: ${{ inputs.unique-id != '' }}
 
+    - name: Set config file to use
+      shell: bash
+      run: |
+        if [[ "${{inputs.gpu }}" == "none" ]]; then 
+            CONFIG_FILE="k3d-${{ inputs.cni }}.yaml"
+        else
+            CONFIG_FILE="k3d-${{ inputs.cni }}-gpu.yaml"
+        fi
+        echo "K3D_CONFIG=${CONFIG_FILE}" >> $GITHUB_ENV
+
+
     - name: Generate unique ID from SHA and job name
       shell: bash
       env:
@@ -85,6 +96,7 @@ runs:
         ${{ github.action_path }}/terraform/create-cluster.sh
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
         echo "unique-id=${ID}" >> $GITHUB_OUTPUT
+
     - name: Teardown cluster
       if: ${{ inputs.cluster-action == 'destroy' }} 
       env:
