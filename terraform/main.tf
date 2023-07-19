@@ -21,6 +21,7 @@ locals {
   init_cluster_template = templatefile("${path.module}/templates/init-cluster.tpl",
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
+      k3d_config = var.k3d_config
   })
   suffix = var.suffix != "" ? "${var.suffix}-${random_id.unique_id.hex}" : random_id.unique_id.hex
 
@@ -35,7 +36,7 @@ resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
   ami                    = data.aws_ami.latest_ubuntu_ami.image_id
-  instance_type          = "m5.4xlarge"                                   # vCPU: 16 -- RAM: 64GB
+  instance_type          = var.instance_size                                 
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name # Instance profile to allow us to upload kubeconfig to secrets manager
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = local.init_cluster_template

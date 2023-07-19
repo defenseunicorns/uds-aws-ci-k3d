@@ -33,10 +33,6 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /tmp/k3d-config.yaml /k3d-config.yaml"]
-  }
-
-  provisioner "shell" {
     script  = "./install-tools.sh"
     timeout = "15m"
   }

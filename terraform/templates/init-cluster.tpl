@@ -4,7 +4,7 @@ public_ip="$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"
 
 # Create k3d cluster
 k3d cluster create \
-    --config k3d-config.yaml \
+    --config ${k3d_config} \
     --k3s-arg "--tls-san=$public_ip@server:*"
 
 # Edit kubeconfig

@@ -14,6 +14,18 @@ inputs:
     description: 'AWS region to deploy to'
     required: false
     default: "us-west-2"
+  instance-size:
+    description: 'AWS EC2 Instance Size to deploy on'
+    required: false
+    default: "m5.4xlarge" # vCPU: 16 -- RAM: 64GB
+  cni:
+    description: 'CNI to use. Either calico or flannel'
+    required: false
+    default: "calico"
+  gpu:
+    description: 'Enable GPU. Options include none, all, 1, 2, etc'
+    required: false
+    default: "none"
   unique-id:  # id of input
     description: 'unique id of cluster'
     required: false
