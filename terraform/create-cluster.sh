@@ -65,7 +65,7 @@ aws secretsmanager get-secret-value \
     --query 'SecretString' \
     --output text > ~/.kube/config
 
-zarf tools kubectl get nodes -o wide
+# zarf tools kubectl get nodes -o wide
 checkError "zarf"
 
 rm -rf .terraform
