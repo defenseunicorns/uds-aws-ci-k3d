@@ -77,7 +77,7 @@ resource "aws_iam_instance_profile" "instance_profile" {
 
 resource "aws_iam_role" "instance_role" {
   name = "upload_kubeconfig-${random_id.unique_id.hex}"
-
+  permissions_boundary = "arn:aws:iam::248783118822:policy/unicorn-base-policy"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
