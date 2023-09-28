@@ -29,6 +29,7 @@ inputs:
 
 
 
+
 outputs:
   instance-id:
     description: 'Instance ID of the EC2 instance'
