@@ -28,12 +28,17 @@ build {
   sources = ["source.amazon-ebs.ubuntu"]
 
   provisioner "file" {
-    source      = "k3d-config.yaml"
-    destination = "/tmp/k3d-config.yaml"
+    source      = "k3d-calico.yaml"
+    destination = "/tmp/k3d-calico.yaml"
+  }
+
+  provisioner "file" {
+    source      = "k3d-flannel.yaml"
+    destination = "/tmp/k3d-flannel.yaml"
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /tmp/k3d-config.yaml /k3d-config.yaml"]
+    inline = ["sudo mv /tmp/k3d-*.yaml /"]
   }
 
   provisioner "shell" {

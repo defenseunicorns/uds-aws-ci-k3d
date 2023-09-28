@@ -18,6 +18,27 @@ inputs:
     description: 'unique id of cluster'
     required: false
     default: ""
+  instance-size:
+    description: 'AWS EC2 Instance Size to deploy on'
+    required: false
+    default: "m5.4xlarge" # vCPU: 16 -- RAM: 64GB
+  k3d-config:
+    description: 'k3d config file to use'
+    required: false
+    default: "k3d-flannel.yaml"
+  # cni:
+  #   description: 'CNI to use. Either calico or flannel'
+  #   required: false
+  #   default: "calico"
+  # gpu:
+  #   description: 'Enable GPU. Options include none or all'
+  #   required: false
+  #   default: "none"
+  # k3s-version:
+  #   description: 'version of k3s'
+  #   required: false
+  #   default: "v1.26.6+k3s1"
+
 
 outputs:
   instance-id:
@@ -50,6 +71,12 @@ runs:
       run: echo "ID=${{ inputs.unique-id }}" >> $GITHUB_ENV
       if: ${{ inputs.unique-id != '' }}
 
+    - name: Set configs to use
+      shell: bash
+      run: |
+        echo "INSTANCE_SIZE=${{ inputs.instance-size }}" >> $GITHUB_ENV
+        echo "K3D_CONFIG=${{ inputs.k3d-config }}" >> $GITHUB_ENV
+
     - name: Generate unique ID from SHA and job name
       shell: bash
       env:
@@ -66,6 +93,8 @@ runs:
       env:
         SHA: ${{ github.sha }}
         ID: ${{ env.ID }}
+        INSTANCE_SIZE: ${{ env.INSTANCE_SIZE }}
+        K3D_CONFIG: ${{ env.K3D_CONFIG }}
       if: ${{ inputs.cluster-action == 'create' }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
@@ -78,6 +107,8 @@ runs:
       env:
         SHA: ${{ github.sha }}
         ID: ${{ env.ID }}
+        INSTANCE_SIZE: ${{ env.INSTANCE_SIZE }}
+        K3D_CONFIG: ${{ env.K3D_CONFIG }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
       run: ${{ github.action_path }}/terraform/teardown-cluster.sh
