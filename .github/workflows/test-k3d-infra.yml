@@ -76,6 +76,8 @@ jobs:
           aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           aws-region: us-west-2
           unique-id: ${{ steps.unique-id.outputs.unique-id }}
+          k3d-config: "k3d-calico.yaml"
+          instance-size: "m6i.8xlarge"
       # Test cluster access in same job
       - name: Show Cluster
         run: |
