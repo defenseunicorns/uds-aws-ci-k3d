@@ -38,7 +38,7 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /tmp/k3d*.yaml /"]
+    inline = ["sudo mv /tmp/k3d*yaml /"]
   }
 
   provisioner "shell" {

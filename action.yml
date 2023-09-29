@@ -26,18 +26,7 @@ inputs:
     description: 'k3d config file to use'
     required: false
     default: "k3d.yaml"
-  # cni:
-  #   description: 'CNI to use. Either calico or flannel'
-  #   required: false
-  #   default: "calico"
-  # gpu:
-  #   description: 'Enable GPU. Options include none or all'
-  #   required: false
-  #   default: "none"
-  # k3s-version:
-  #   description: 'version of k3s'
-  #   required: false
-  #   default: "v1.26.6+k3s1"
+
 
 
 outputs:
