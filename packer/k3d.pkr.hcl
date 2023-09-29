@@ -34,11 +34,11 @@ build {
 
   provisioner "file" {
     source      = "k3d-flannel.yaml"
-    destination = "/tmp/k3d-flannel.yaml"
+    destination = "/tmp/k3d.yaml"
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /tmp/k3d-*.yaml /"]
+    inline = ["sudo mv /tmp/k3d*.yaml /"]
   }
 
   provisioner "shell" {
