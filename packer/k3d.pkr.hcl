@@ -38,12 +38,17 @@ build {
   }
 
   provisioner "file" {
+    source      = "calico.yaml"
+    destination = "/tmp/calico.yaml"
+  }
+
+  provisioner "file" {
     source      = "k3d-config.yaml"
     destination = "/tmp/k3d-config.yaml"
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /tmp/k3d*yaml /"]
+    inline = ["sudo mv /tmp/*yaml /"]
   }
 
   provisioner "shell" {
