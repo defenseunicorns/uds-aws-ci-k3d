@@ -62,7 +62,7 @@ jobs:
         working-directory: packer
 
       - name: Packer build
-        run: packer build -var "ami_name=${{ needs.prepare.outputs.image_name }}".
+        run: packer build -var "ami_name=${{ needs.prepare.outputs.image_name }}" .
         working-directory: packer
 
   test-k3d-infra:
@@ -96,6 +96,7 @@ jobs:
           unique-id: ${{ steps.unique-id.outputs.unique-id }}
           k3d-config: "k3d-calico.yaml"
           instance-size: "m6i.8xlarge"
+          ami-prefix: ${{ needs.prepare.outputs.image_name }}
       # Test cluster access in same job
       - name: Show Cluster
         run: |

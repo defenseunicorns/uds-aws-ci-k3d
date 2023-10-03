@@ -11,7 +11,7 @@ data "aws_ami" "latest_ubuntu_ami" {
 
   filter {
     name   = "name"
-    values = ["uds-ci-k3d-*"]
+    values = ["${var.ami_prefix}-*"]
   }
 
   owners = ["248783118822"]

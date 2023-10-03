@@ -13,6 +13,11 @@ variable "instance_size" {
   default = "m5.4xlarge"
 }
 
+variable "ami_prefix" {
+  type    = string
+  default = "uds-ci-k3d"
+}
+
 variable "k3d_config" {
   type    = string
   default = "k3d-calico.yaml"
