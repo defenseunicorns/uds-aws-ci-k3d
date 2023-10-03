@@ -26,6 +26,8 @@ sudo apt-get install -y docker-ce containerd.io
 
 sudo usermod -aG docker ubuntu
 
+sudo snap install helm --classic
+
 # Install k3d
 curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG="$K3D_VERSION" bash
 

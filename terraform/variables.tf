@@ -26,7 +26,7 @@ variable "k3d_config" {
 variable "k3s" {
   type = bool
   description = "True/False to install k3s instead of k3d"
-  default = "k3d"
+  default = false
 }
 
 # variable "gpu" {

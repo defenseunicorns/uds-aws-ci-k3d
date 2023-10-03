@@ -19,7 +19,7 @@ data "aws_ami" "latest_ubuntu_ami" {
 
 locals {
   script_template = var.k3s ? "init-k3s-cluster.tpl" : "init-cluster.tpl"
-  init_cluster_template = templatefile("${path.module}/templates/local.script_template",
+  init_cluster_template = templatefile("${path.module}/templates/${local.script_template}",
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
       k3d_config_file = var.k3d_config
@@ -114,6 +114,11 @@ resource "aws_iam_policy" "secrets_manager_policy" {
 resource "aws_iam_role_policy_attachment" "secrets_manager" {
   role       = aws_iam_role.instance_role.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_role_policy_attach" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
 }
 
 resource "aws_secretsmanager_secret" "kubeconfig" {

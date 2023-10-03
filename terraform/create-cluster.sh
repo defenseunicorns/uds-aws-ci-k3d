@@ -44,13 +44,13 @@ checkError "terraform"
 
 terraform plan -var="client_ip=$client_ip" -var="suffix=${ID}" \
     -var="instance_size=${INSTANCE_SIZE}" -var="k3d_config=${K3D_CONFIG}" \
-     -var="ami_prefix=${AMI_PREFIX}" 
+     -var="ami_prefix=${AMI_PREFIX}" -var="k3s=${K3S}"
 
 checkError "terraform"
 
 terraform apply -var="client_ip=$client_ip" -var="suffix=${ID}" \
     -var="instance_size=${INSTANCE_SIZE}" -var="k3d_config=${K3D_CONFIG}" \
-     -var="ami_prefix=${AMI_PREFIX}" --auto-approve
+     -var="ami_prefix=${AMI_PREFIX}" -var="k3s=${K3S}" --auto-approve
 
 checkError "terraform"
 
