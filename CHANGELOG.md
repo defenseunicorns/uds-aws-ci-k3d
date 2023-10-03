@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/defenseunicorns/uds-aws-ci-k3d/compare/v0.0.4...v0.0.5) (2023-10-03)
+
+
+### Bug Fixes
+
+* add limit script for kernel limits ([#26](https://github.com/defenseunicorns/uds-aws-ci-k3d/issues/26)) ([6789e46](https://github.com/defenseunicorns/uds-aws-ci-k3d/commit/6789e464035a80af4e52807f2b4dab63fba8eb33))
+
 ## [0.0.4](https://github.com/defenseunicorns/uds-aws-ci-k3d/compare/v0.0.3...v0.0.4) (2023-10-03)
 
 
