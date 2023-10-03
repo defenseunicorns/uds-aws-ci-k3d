@@ -27,6 +27,11 @@ build {
   name    = local.ami_name
   sources = ["source.amazon-ebs.ubuntu"]
 
+  provisioner "shell" {
+    script  = "./limits.sh"
+    timeout = "1m"
+  }
+
   provisioner "file" {
     source      = "k3d-calico.yaml"
     destination = "/tmp/k3d-calico.yaml"
