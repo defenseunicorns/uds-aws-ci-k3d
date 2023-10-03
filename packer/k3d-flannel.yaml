@@ -19,6 +19,11 @@ options:
           - server:*
   k3d:
     wait: true
+volumes:
+  - volume: /etc/machine-id:/etc/machine-id
+    nodeFilters:
+      - server:0
+      - agent:*
 ports:
   - port: 80:80
     nodeFilters:
