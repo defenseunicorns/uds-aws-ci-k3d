@@ -38,7 +38,7 @@ build {
   }
 
   provisioner "file" {
-    source      = "k3d-flannel.yaml"
+    source      = "k3d-config.yaml"
     destination = "/tmp/k3d-config.yaml"
   }
 

@@ -25,7 +25,7 @@ inputs:
   k3d-config:
     description: 'k3d config file to use'
     required: false
-    default: "k3d.yaml"
+    default: "k3d-config.yaml"
 
 
 
