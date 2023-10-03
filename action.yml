@@ -26,7 +26,10 @@ inputs:
     description: 'k3d config file to use'
     required: false
     default: "k3d-config.yaml"
-
+  ami-prefix:
+    description: 'prefix of ami to use'
+    required: false
+    default: "uds-ci-k3d"
 
 
 
@@ -66,6 +69,7 @@ runs:
       run: |
         echo "INSTANCE_SIZE=${{ inputs.instance-size }}" >> $GITHUB_ENV
         echo "K3D_CONFIG=${{ inputs.k3d-config }}" >> $GITHUB_ENV
+        echo "AMI_PREFIX=${{ inputs.ami-prefix }}" >> $GITHUB_ENV
 
     - name: Generate unique ID from SHA and job name
       shell: bash
@@ -85,6 +89,7 @@ runs:
         ID: ${{ env.ID }}
         INSTANCE_SIZE: ${{ env.INSTANCE_SIZE }}
         K3D_CONFIG: ${{ env.K3D_CONFIG }}
+        AMI_PREFIX: ${{ env.AMI_PREFIX }}
       if: ${{ inputs.cluster-action == 'create' }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
@@ -99,6 +104,7 @@ runs:
         ID: ${{ env.ID }}
         INSTANCE_SIZE: ${{ env.INSTANCE_SIZE }}
         K3D_CONFIG: ${{ env.K3D_CONFIG }}
+        AMI_PREFIX: ${{ env.AMI_PREFIX }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
       run: ${{ github.action_path }}/terraform/teardown-cluster.sh

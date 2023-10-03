@@ -43,13 +43,14 @@ terraform init -backend-config="key=uds-aws-ci-k3d/${ID}.tfstate"
 checkError "terraform"
 
 terraform plan -var="client_ip=$client_ip" -var="suffix=${ID}" \
-    -var="instance_size=${INSTANCE_SIZE}" -var="k3d_config=${K3D_CONFIG}" 
+    -var="instance_size=${INSTANCE_SIZE}" -var="k3d_config=${K3D_CONFIG}" \
+     -var="ami_prefix=${AMI_PREFIX}" 
 
 checkError "terraform"
 
 terraform apply -var="client_ip=$client_ip" -var="suffix=${ID}" \
     -var="instance_size=${INSTANCE_SIZE}" -var="k3d_config=${K3D_CONFIG}" \
-    --auto-approve
+     -var="ami_prefix=${AMI_PREFIX}" --auto-approve
 
 checkError "terraform"
 
