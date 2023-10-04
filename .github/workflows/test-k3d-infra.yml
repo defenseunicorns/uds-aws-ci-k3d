@@ -57,13 +57,13 @@ jobs:
           # 21600 seconds == 6 hours
           role-duration-seconds: 21600
 
-      # - name: Packer init
-      #   run: packer init .
-      #   working-directory: packer
+      - name: Packer init
+        run: packer init .
+        working-directory: packer
 
-      # - name: Packer build
-      #   run: packer build -var "ami_name=${{ needs.prepare.outputs.image_name }}" .
-      #   working-directory: packer
+      - name: Packer build
+        run: packer build -var "ami_name=${{ needs.prepare.outputs.image_name }}" .
+        working-directory: packer
 
   test-k3d-infra:
     runs-on: ubuntu-latest
