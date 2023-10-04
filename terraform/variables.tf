@@ -26,7 +26,7 @@ variable "k3d_config" {
 variable "k3s" {
   type = string
   description = "True/False to install k3s instead of k3d"
-  default = "false"
+  #default = "false"
 }
 
 variable "region" {
