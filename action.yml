@@ -93,7 +93,7 @@ runs:
         INSTANCE_SIZE: ${{ env.INSTANCE_SIZE }}
         K3D_CONFIG: ${{ env.K3D_CONFIG }}
         AMI_PREFIX: ${{ env.AMI_PREFIX }}
-        K3S: ${{ env.k3s }}
+        K3S: ${{ env.K3S }}
       if: ${{ inputs.cluster-action == 'create' }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
@@ -110,7 +110,7 @@ runs:
         INSTANCE_SIZE: ${{ env.INSTANCE_SIZE }}
         K3D_CONFIG: ${{ env.K3D_CONFIG }}
         AMI_PREFIX: ${{ env.AMI_PREFIX }}
-        K3S: ${{ env.k3s }}
+        K3S: ${{ env.K3S }}
       working-directory: ${{ github.action_path }}/terraform
       shell: bash
       run: ${{ github.action_path }}/terraform/teardown-cluster.sh
