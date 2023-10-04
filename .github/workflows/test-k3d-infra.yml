@@ -73,6 +73,9 @@ jobs:
     # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
     if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
     # Test with parallel jobs using and not using unique input
+    strategy:
+      matrix:
+        k3s: ["true","false"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -97,6 +100,7 @@ jobs:
           k3d-config: "k3d-calico.yaml"
           instance-size: "m6i.8xlarge"
           ami-prefix: ${{ needs.prepare.outputs.image_name }}
+          k3s: ${{ matrix.k3s }}
       # Test cluster access in same job
       - name: Show Cluster
         run: |
