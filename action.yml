@@ -31,7 +31,7 @@ inputs:
     required: false
     default: "uds-ci-k3d"
   k3s:
-    description: 'prefix of ami to use'
+    description: 'k3s or k3d'
     required: false
     default: "false"
 
