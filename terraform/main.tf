@@ -18,7 +18,7 @@ data "aws_ami" "latest_ubuntu_ami" {
 }
 
 locals {
-  script_template = var.k3s ? "init-k3s-cluster.tpl" : "init-cluster.tpl"
+  script_template = var.k3s == "true" ? "init-k3s-cluster.tpl" : "init-cluster.tpl"
   init_cluster_template = templatefile("${path.module}/templates/${local.script_template}",
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
