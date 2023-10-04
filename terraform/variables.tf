@@ -29,10 +29,10 @@ variable "k3s" {
   default = false
 }
 
-# variable "gpu" {
-#  type    = string
-#  default = "none"
-# }
+variable "region" {
+ type    = string
+ default = "us-west-2"
+}
 
 # variable "k3s_version" {
 #  type    = string

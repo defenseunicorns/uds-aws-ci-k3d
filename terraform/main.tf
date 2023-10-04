@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"
+  region = var.region
 }
 
 resource "random_id" "unique_id" {
@@ -23,6 +23,7 @@ locals {
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
       k3d_config_file = var.k3d_config
+      region = var.region
   })
   suffix = var.suffix != "" ? "${var.suffix}-${random_id.unique_id.hex}" : random_id.unique_id.hex
 
@@ -30,6 +31,7 @@ locals {
       "Name"         = "uds-ci-k3d-${local.suffix}"
       "ManagedBy"    = "Terraform"
       "CreationDate" = time_static.creation_time.rfc3339
+      "kubernetes.io/cluster/uds-ci-k3d-${local.suffix}" = "owned"
   })
 }
 
@@ -119,6 +121,15 @@ resource "aws_iam_role_policy_attachment" "secrets_manager" {
 resource "aws_iam_role_policy_attachment" "ssm_role_policy_attach" {
   role       = aws_iam_role.instance_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+}
+resource "aws_iam_role_policy_attachment" "elb_role_policy_attach" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_role_policy_attach" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 resource "aws_secretsmanager_secret" "kubeconfig" {
