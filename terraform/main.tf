@@ -39,7 +39,7 @@ resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
   ami                    = data.aws_ami.latest_ubuntu_ami.image_id
-  instance_type          = "m5.4xlarge"                                   # vCPU: 16 -- RAM: 64GB
+  instance_type          = var.instance_size                                # vCPU: 16 -- RAM: 64GB
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name # Instance profile to allow us to upload kubeconfig to secrets manager
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = local.init_cluster_template
