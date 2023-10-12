@@ -45,9 +45,10 @@ resource "aws_instance" "ec2_instance" {
   user_data              = local.init_cluster_template
 
   root_block_device {
-    volume_size           = 250
-    volume_type           = "gp2"
-    delete_on_termination = true
+    volume_size = 400
+    iops = 16000
+    throughput = 500
+    volume_type = "gp3"
   }
 
   tags = local.tags
