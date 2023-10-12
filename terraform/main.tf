@@ -43,7 +43,7 @@ resource "aws_instance" "ec2_instance" {
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name # Instance profile to allow us to upload kubeconfig to secrets manager
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = local.init_cluster_template
-
+  instance_initiated_shutdown_behavior = "terminate"
   root_block_device {
     volume_size = 400
     iops = 16000
