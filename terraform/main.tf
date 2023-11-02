@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"
+  region = var.region
 }
 
 resource "random_id" "unique_id" {
@@ -11,16 +11,19 @@ data "aws_ami" "latest_ubuntu_ami" {
 
   filter {
     name   = "name"
-    values = ["uds-ci-k3d-*"]
+    values = ["${var.ami_prefix}-*"]
   }
 
   owners = ["248783118822"]
 }
 
 locals {
-  init_cluster_template = templatefile("${path.module}/templates/init-cluster.tpl",
+  script_template = var.k3s == "true" ? "init-k3s-cluster.tpl" : "init-cluster.tpl"
+  init_cluster_template = templatefile("${path.module}/templates/${local.script_template}",
     {
       secret_id = aws_secretsmanager_secret.kubeconfig.name
+      k3d_config_file = var.k3d_config
+      region = var.region
   })
   suffix = var.suffix != "" ? "${var.suffix}-${random_id.unique_id.hex}" : random_id.unique_id.hex
 
@@ -28,6 +31,7 @@ locals {
       "Name"         = "uds-ci-k3d-${local.suffix}"
       "ManagedBy"    = "Terraform"
       "CreationDate" = time_static.creation_time.rfc3339
+      "kubernetes.io/cluster/uds-ci-k3d-${local.suffix}" = "owned"
   })
 }
 
@@ -35,15 +39,16 @@ resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
   ami                    = data.aws_ami.latest_ubuntu_ami.image_id
-  instance_type          = "m5.4xlarge"                                   # vCPU: 16 -- RAM: 64GB
+  instance_type          = var.instance_size                                # vCPU: 16 -- RAM: 64GB
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name # Instance profile to allow us to upload kubeconfig to secrets manager
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = local.init_cluster_template
-
+  instance_initiated_shutdown_behavior = "terminate"
   root_block_device {
-    volume_size           = 250
-    volume_type           = "gp2"
-    delete_on_termination = true
+    volume_size = 400
+    iops = 16000
+    throughput = 500
+    volume_type = "gp3"
   }
 
   tags = local.tags
@@ -77,7 +82,7 @@ resource "aws_iam_instance_profile" "instance_profile" {
 
 resource "aws_iam_role" "instance_role" {
   name = "upload_kubeconfig-${random_id.unique_id.hex}"
-
+  permissions_boundary = "arn:aws:iam::248783118822:policy/unicorn-base-policy"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -112,6 +117,20 @@ resource "aws_iam_policy" "secrets_manager_policy" {
 resource "aws_iam_role_policy_attachment" "secrets_manager" {
   role       = aws_iam_role.instance_role.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_role_policy_attach" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+}
+resource "aws_iam_role_policy_attachment" "elb_role_policy_attach" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_role_policy_attach" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 resource "aws_secretsmanager_secret" "kubeconfig" {

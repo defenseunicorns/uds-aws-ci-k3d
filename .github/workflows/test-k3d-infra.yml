@@ -22,7 +22,25 @@ permissions:
   contents: read
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      image_name: ${{ steps.set_env.outputs.image_name }}
+    steps:
+    - name: Set VAR for image name based on run context
+      id: set_env
+      run: |
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          echo "image_name=rc-${{ env.IMAGE }}" >> $GITHUB_OUTPUT
+        else
+        echo "image_name=${{ env.IMAGE }}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        IMAGE: uds-ci-k3d
+
+
   build-ami:
+    needs: prepare
     runs-on: ubuntu-latest
     # Only run this job when a PR has changes in the 'packer/' directory, or when a commit with changes to the 'packer/' directory is pushed to the main branch.
     if: ${{ contains(github.event.pull_request.changed_files, 'packer/') }} || github.event_name == 'push' && contains(github.event.head_commit.modified, 'packer/')
@@ -44,17 +62,20 @@ jobs:
         working-directory: packer
 
       - name: Packer build
-        run: packer build .
+        run: packer build -var "ami_name=${{ needs.prepare.outputs.image_name }}" .
         working-directory: packer
 
   test-k3d-infra:
     runs-on: ubuntu-latest
     # Run if changes on are picked up in terraform or workflow files. Depend on build-ami if that job triggers.
-    needs: build-ami
+    needs: [prepare, build-ami]
     # Only run this job when the 'build-ami' job finishes successfully, or when it is skipped.
     # If the 'build-ami' job fails, we want to fail fast and fix the error rather than continuing on to spin up AWS infrastructure.
     if: ${{ needs.build-ami.result == 'success' || needs.build-ami.result == 'skipped' }}
     # Test with parallel jobs using and not using unique input
+    strategy:
+      matrix:
+        k3s: ["true", "false"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -62,7 +83,9 @@ jobs:
       - name: Install Zarf
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
-
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.7"
       - name: Generate unique id
         id: unique-id
         run: echo "unique-id=$(openssl rand -hex 8)" >> $GITHUB_OUTPUT
@@ -76,6 +99,10 @@ jobs:
           aws-assume-role: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           aws-region: us-west-2
           unique-id: ${{ steps.unique-id.outputs.unique-id }}
+          k3d-config: "k3d-calico.yaml"
+          instance-size: "m6i.8xlarge"
+          ami-prefix: ${{ needs.prepare.outputs.image_name }}
+          k3s: ${{ matrix.k3s }}
       # Test cluster access in same job
       - name: Show Cluster
         run: |
