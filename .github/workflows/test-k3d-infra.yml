@@ -83,7 +83,9 @@ jobs:
       - name: Install Zarf
         # This uses the default options (latest version of zarf, no init package)
         uses: defenseunicorns/setup-zarf@main
-
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.7"
       - name: Generate unique id
         id: unique-id
         run: echo "unique-id=$(openssl rand -hex 8)" >> $GITHUB_OUTPUT
