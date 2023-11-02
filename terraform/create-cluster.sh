@@ -61,6 +61,7 @@ secret_name="$(terraform output -raw secret_name)"
 echo "instance-id=${instance_id}" >> "$GITHUB_OUTPUT"
 echo "secret-name=${secret_name}" >> "$GITHUB_OUTPUT"
 
+echo "$instance_id"
 waitInstanceReady "$instance_id"
 
 rm -rf ~/.kube/config
